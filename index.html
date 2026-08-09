@@ -1,0 +1,2059 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📐 数学学习工作台 - MathWorkbench</title>
+    <style>
+        :root {
+            --bg: #f5f6f8;
+            --surface: #ffffff;
+            --surface2: #fafbfc;
+            --border: #e4e7ed;
+            --text: #2c3e50;
+            --text2: #5a6c7d;
+            --text3: #8b9aab;
+            --primary: #4A6CF7;
+            --primary-light: #eef1ff;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --accent1: #6366f1;
+            --accent2: #8b5cf6;
+            --accent3: #ec4899;
+            --accent4: #f43f5e;
+            --gold: #f0a500;
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
+            --shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+            --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.12);
+            --radius-sm: 8px;
+            --radius: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 20px;
+            --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            --font-mono: 'SF Mono', 'Cascadia Code', 'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+            --modal-overlay-bg: rgba(0, 0, 0, 0.5);
+            --table-header-bg: #f8fafc;
+            --table-hover-bg: #fafcff;
+            --input-bg: #fafbfc;
+            --input-focus-bg: #fff;
+            --progress-bg: #e9ecef;
+            --tree-hover-bg: #f5f7ff;
+            --tree-selected-bg: var(--primary-light);
+            --tree-selected-outline: var(--primary);
+            --badge-bg: var(--primary);
+            --badge-text: #fff;
+            --btn-outline-bg: #fff;
+            --btn-outline-border: var(--border);
+            --btn-outline-color: var(--text);
+            --btn-outline-hover-border: var(--primary);
+            --btn-outline-hover-color: var(--primary);
+            --btn-outline-hover-bg: var(--primary-light);
+            --btn-danger-bg: #fff;
+            --btn-danger-border: #fecaca;
+            --btn-danger-color: var(--danger);
+            --btn-danger-hover-bg: #fef2f2;
+            --btn-danger-hover-border: var(--danger);
+        }
+
+        [data-theme="dark"] {
+            --bg: #1a1d27;
+            --surface: #232735;
+            --surface2: #2a2e3a;
+            --border: #3a3f4e;
+            --text: #e4e6ed;
+            --text2: #b0b6c9;
+            --text3: #7d8396;
+            --primary: #7c8dfe;
+            --primary-light: #2a3048;
+            --success: #34d399;
+            --warning: #fbbf24;
+            --danger: #f87171;
+            --accent1: #818cf8;
+            --accent2: #a78bfa;
+            --accent3: #f472b6;
+            --accent4: #fb7185;
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
+            --shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+            --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.6);
+            --modal-overlay-bg: rgba(0, 0, 0, 0.7);
+            --table-header-bg: #2a2e3a;
+            --table-hover-bg: #2e3341;
+            --input-bg: #2a2e3a;
+            --input-focus-bg: #323644;
+            --progress-bg: #3a3f4e;
+            --tree-hover-bg: #2e3341;
+            --tree-selected-bg: #2a3048;
+            --tree-selected-outline: #7c8dfe;
+            --badge-bg: #7c8dfe;
+            --badge-text: #fff;
+            --btn-outline-bg: #232735;
+            --btn-outline-border: #3a3f4e;
+            --btn-outline-color: #e4e6ed;
+            --btn-outline-hover-border: #7c8dfe;
+            --btn-outline-hover-color: #7c8dfe;
+            --btn-outline-hover-bg: #2a3048;
+            --btn-danger-bg: #232735;
+            --btn-danger-border: #5a3e4a;
+            --btn-danger-color: #f87171;
+            --btn-danger-hover-bg: #3a2a2e;
+            --btn-danger-hover-border: #f87171;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            user-select: none;
+            -webkit-font-smoothing: antialiased;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        .top-bar {
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            z-index: 100;
+            box-shadow: var(--shadow-sm);
+            flex-shrink: 0;
+            flex-wrap: wrap;
+            transition: background 0.3s ease, border-color 0.3s ease;
+        }
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+            font-size: 1.15rem;
+            color: var(--primary);
+            white-space: nowrap;
+            letter-spacing: -0.3px;
+        }
+        .logo-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: var(--radius-sm);
+            background: linear-gradient(135deg, #4A6CF7, #6366f1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            color: #fff;
+            box-shadow: 0 2px 8px rgba(74, 108, 247, 0.3);
+        }
+        .growth-bar-container {
+            flex: 1;
+            min-width: 220px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            position: relative;
+        }
+        .growth-label {
+            font-size: 0.8rem;
+            color: var(--text2);
+            white-space: nowrap;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+        }
+        .growth-bar-outer {
+            flex: 1;
+            height: 18px;
+            background: var(--progress-bg);
+            border-radius: 20px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.06);
+            min-width: 100px;
+        }
+        .growth-bar-inner {
+            height: 100%;
+            border-radius: 20px;
+            transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+            background: linear-gradient(90deg, #4A6CF7, #6366f1, #8b5cf6, #a78bfa);
+            background-size: 200% 100%;
+            animation: shimmer 3s ease-in-out infinite;
+            position: relative;
+        }
+        @keyframes shimmer {
+            0%,
+            100% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+        }
+        .growth-bar-inner::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            width: 30px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3));
+            border-radius: 0 20px 20px 0;
+        }
+        .growth-percent {
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: var(--primary);
+            white-space: nowrap;
+            min-width: 42px;
+            text-align: center;
+        }
+        .top-right-slogan {
+            font-size: 0.85rem;
+            color: var(--text3);
+            font-style: italic;
+            white-space: nowrap;
+            cursor: pointer;
+            padding: 6px 14px;
+            border-radius: 20px;
+            background: var(--surface2);
+            border: 1px dashed var(--border);
+            transition: var(--transition);
+            max-width: 280px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .top-right-slogan:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        .main-layout {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        .sidebar {
+            width: 200px;
+            background: var(--surface);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+            padding: 8px 0;
+            overflow-y: auto;
+            gap: 2px;
+            box-shadow: var(--shadow-sm);
+            z-index: 50;
+            transition: background 0.3s ease, border-color 0.3s ease;
+        }
+        .sidebar-nav-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 11px 18px;
+            margin: 0 8px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text2);
+            transition: var(--transition);
+            white-space: nowrap;
+            position: relative;
+        }
+        .sidebar-nav-item:hover {
+            background: var(--tree-hover-bg);
+            color: var(--primary);
+        }
+        .sidebar-nav-item.active {
+            background: var(--primary-light);
+            color: var(--primary);
+            font-weight: 600;
+            box-shadow: inset 3px 0 0 var(--primary);
+        }
+        .sidebar-nav-item .nav-icon {
+            font-size: 1.2rem;
+            width: 26px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+        .sidebar-nav-item .badge {
+            margin-left: auto;
+            background: var(--badge-bg);
+            color: var(--badge-text);
+            font-size: 0.7rem;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+        .sidebar-divider {
+            height: 1px;
+            background: var(--border);
+            margin: 6px 12px;
+        }
+        .sidebar-section-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text3);
+            padding: 6px 18px;
+            font-weight: 700;
+        }
+
+        .content-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px 24px;
+            background: var(--bg);
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            transition: background 0.3s ease;
+        }
+        .content-panel {
+            display: none;
+            flex-direction: column;
+            gap: 16px;
+            animation: fadeSlideIn 0.35s ease;
+        }
+        .content-panel.active {
+            display: flex;
+        }
+        @keyframes fadeSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(12px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .card {
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            padding: 20px 24px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            transition: var(--transition);
+        }
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 14px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .card-title {
+            font-weight: 700;
+            font-size: 1.05rem;
+            color: var(--text);
+            letter-spacing: -0.2px;
+        }
+        .card-subtitle {
+            font-size: 0.8rem;
+            color: var(--text3);
+            font-weight: 400;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border-radius: 20px;
+            border: none;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
+            letter-spacing: 0.1px;
+        }
+        .btn-primary {
+            background: var(--primary);
+            color: #fff;
+            box-shadow: 0 2px 8px rgba(74, 108, 247, 0.3);
+        }
+        .btn-primary:hover {
+            background: #3b5de7;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 16px rgba(74, 108, 247, 0.4);
+        }
+        .btn-outline {
+            background: var(--btn-outline-bg);
+            border: 1.5px solid var(--btn-outline-border);
+            color: var(--btn-outline-color);
+        }
+        .btn-outline:hover {
+            border-color: var(--btn-outline-hover-border);
+            color: var(--btn-outline-hover-color);
+            background: var(--btn-outline-hover-bg);
+        }
+        .btn-sm {
+            padding: 5px 12px;
+            font-size: 0.78rem;
+            border-radius: 14px;
+        }
+        .btn-danger {
+            background: var(--btn-danger-bg);
+            border: 1.5px solid var(--btn-danger-border);
+            color: var(--btn-danger-color);
+        }
+        .btn-danger:hover {
+            background: var(--btn-danger-hover-bg);
+            border-color: var(--btn-danger-hover-border);
+        }
+        .btn-icon {
+            width: 34px;
+            height: 34px;
+            padding: 0;
+            border-radius: 50%;
+            justify-content: center;
+            font-size: 1.1rem;
+        }
+
+        .feishu-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.88rem;
+            border-radius: var(--radius);
+            overflow: hidden;
+        }
+        .feishu-table th,
+        .feishu-table td {
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+        .feishu-table th {
+            background: var(--table-header-bg);
+            font-weight: 700;
+            color: var(--text2);
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            position: sticky;
+            top: 0;
+        }
+        .feishu-table tbody tr {
+            transition: var(--transition);
+        }
+        .feishu-table tbody tr:hover {
+            background: var(--table-hover-bg);
+        }
+        .feishu-table .cell-highlight {
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 1.1rem;
+        }
+        .progress-mini {
+            height: 8px;
+            border-radius: 10px;
+            background: var(--progress-bg);
+            overflow: hidden;
+            min-width: 60px;
+        }
+        .progress-mini-fill {
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+
+        .tree-container {
+            font-size: 0.9rem;
+            max-height: 55vh;
+            overflow-y: auto;
+            padding-right: 8px;
+        }
+        .tree-node {
+            margin-left: 20px;
+            position: relative;
+        }
+        .tree-node.root {
+            margin-left: 0;
+        }
+        .tree-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: var(--transition);
+            position: relative;
+            color: var(--text);
+        }
+        .tree-row:hover {
+            background: var(--tree-hover-bg);
+        }
+        .tree-row.selected {
+            background: var(--tree-selected-bg);
+            outline: 1.5px solid var(--tree-selected-outline);
+            outline-offset: -1px;
+        }
+        .tree-toggle {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            cursor: pointer;
+            border-radius: 4px;
+            flex-shrink: 0;
+            color: var(--text3);
+            transition: var(--transition);
+        }
+        .tree-toggle:hover {
+            background: #e0e5f0;
+            color: var(--text);
+        }
+        .tree-toggle.empty {
+            visibility: hidden;
+        }
+        .tree-icon {
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+        .tree-name {
+            flex: 1;
+            font-weight: 500;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .tree-name.folder-name {
+            font-weight: 600;
+            color: var(--text);
+        }
+        .tree-name.item-name {
+            font-weight: 400;
+            color: var(--text2);
+        }
+        .tree-actions {
+            display: flex;
+            gap: 2px;
+            opacity: 0;
+            transition: var(--transition);
+        }
+        .tree-row:hover .tree-actions {
+            opacity: 1;
+        }
+        .tree-children {
+            overflow: hidden;
+            transition: max-height 0.35s ease;
+        }
+        .tree-children.collapsed {
+            max-height: 0 !important;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            letter-spacing: 0.2px;
+        }
+        .tag-easy {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        .tag-medium {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        .tag-hard {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        .tag-task {
+            background: #eef1ff;
+            color: #4A6CF7;
+        }
+
+        .bottom-bar {
+            background: var(--surface);
+            border-top: 1px solid var(--border);
+            padding: 8px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            color: var(--text3);
+            cursor: pointer;
+            font-style: italic;
+            transition: var(--transition);
+            flex-shrink: 0;
+            gap: 8px;
+        }
+        .bottom-bar:hover {
+            color: var(--primary);
+            background: #fafcff;
+        }
+        .bottom-bar .edit-hint {
+            font-size: 0.7rem;
+            opacity: 0;
+            transition: var(--transition);
+        }
+        .bottom-bar:hover .edit-hint {
+            opacity: 1;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: var(--modal-overlay-bg);
+            z-index: 200;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.2s ease;
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+        .modal {
+            background: var(--surface);
+            border-radius: var(--radius-xl);
+            padding: 24px 28px;
+            width: 90%;
+            max-width: 550px;
+            box-shadow: var(--shadow-lg);
+            animation: popIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            max-height: 85vh;
+            overflow-y: auto;
+            color: var(--text);
+        }
+        @keyframes popIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9) translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+        .modal h3 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+        }
+        .modal input,
+        .modal textarea,
+        .modal select {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-size: 0.9rem;
+            font-family: inherit;
+            transition: var(--transition);
+            resize: vertical;
+            background: var(--input-bg);
+            color: var(--text);
+        }
+        .modal input:focus,
+        .modal textarea:focus,
+        .modal select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(74, 108, 247, 0.08);
+            background: var(--input-focus-bg);
+        }
+        .modal textarea {
+            min-height: 100px;
+            font-family: var(--font-mono);
+            font-size: 0.82rem;
+            line-height: 1.6;
+        }
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            flex-wrap: wrap;
+        }
+
+        .knowledge-content {
+            background: var(--input-bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 16px 20px;
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            line-height: 1.7;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+            color: var(--text);
+        }
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text3);
+        }
+        .empty-state .empty-icon {
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 56px;
+                padding: 4px 0;
+            }
+            .sidebar-nav-item {
+                padding: 10px 8px;
+                justify-content: center;
+                gap: 0;
+                margin: 0 4px;
+                border-radius: 10px;
+                font-size: 0;
+            }
+            .sidebar-nav-item .nav-icon {
+                font-size: 1.3rem;
+                width: auto;
+            }
+            .sidebar-nav-item .badge {
+                display: none;
+            }
+            .sidebar-section-label {
+                display: none;
+            }
+            .content-area {
+                padding: 12px;
+                gap: 10px;
+            }
+            .top-bar {
+                padding: 8px 12px;
+                gap: 8px;
+            }
+            .top-right-slogan {
+                max-width: 120px;
+                font-size: 0.7rem;
+            }
+            .growth-label {
+                font-size: 0.7rem;
+            }
+            .card {
+                padding: 14px 16px;
+            }
+            .feishu-table th,
+            .feishu-table td {
+                padding: 8px 10px;
+                font-size: 0.75rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="top-bar">
+        <div class="logo-area">
+            <div class="logo-icon">📐</div>
+            <span>数学工作台</span>
+        </div>
+        <div class="growth-bar-container" title="点击查看成长详情">
+            <span class="growth-label">🌱 学习成长</span>
+            <div class="growth-bar-outer">
+                <div class="growth-bar-inner" id="growthBarInner" style="width: 0%;"></div>
+            </div>
+            <span class="growth-percent" id="growthPercent">0%</span>
+        </div>
+        <div class="top-right-slogan" id="topRightSlogan" title="点击编辑标语">✨ 数学是宇宙的语言</div>
+    </div>
+
+    <div class="main-layout">
+        <nav class="sidebar" id="sidebar">
+            <div class="sidebar-section-label">导航</div>
+            <div class="sidebar-nav-item active" data-panel="dashboard">
+                <span class="nav-icon">📊</span> 仪表盘
+            </div>
+            <div class="sidebar-nav-item" data-panel="tasks">
+                <span class="nav-icon">🎯</span> 任务管理
+                <span class="badge" id="taskCountBadge">0</span>
+            </div>
+            <div class="sidebar-divider"></div>
+            <div class="sidebar-section-label">学习工具</div>
+            <div class="sidebar-nav-item" data-panel="knowledge">
+                <span class="nav-icon">🌳</span> 知识库
+                <span class="badge" id="knowledgeCountBadge">0</span>
+            </div>
+            <div class="sidebar-nav-item" data-panel="questions">
+                <span class="nav-icon">📝</span> 题库
+                <span class="badge" id="questionCountBadge">0</span>
+            </div>
+            <div class="sidebar-nav-item" data-panel="notes">
+                <span class="nav-icon">📒</span> 学习笔记
+                <span class="badge" id="noteCountBadge">0</span>
+            </div>
+            <div class="sidebar-divider"></div>
+            <div class="sidebar-nav-item" data-panel="mindmap">
+                <span class="nav-icon">🗺️</span> 知识导图
+            </div>
+            <div class="sidebar-nav-item" data-panel="settings">
+                <span class="nav-icon">⚙️</span> 设置
+            </div>
+        </nav>
+
+        <div class="content-area" id="contentArea">
+            <div class="content-panel active" id="panel-dashboard">
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">📊 学习仪表盘</span>
+                        <span class="card-subtitle">数据总览 · 飞书风格表格</span>
+                    </div>
+                    <div style="overflow-x:auto;">
+                        <table class="feishu-table" id="dashboardTable">
+                            <thead>
+                                <tr>
+                                    <th>任务名称</th>
+                                    <th>📝 题目数量</th>
+                                    <th>🌳 知识库条目</th>
+                                    <th>📒 笔记数量</th>
+                                    <th>📈 丰富度</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="dashboardTableBody">
+                                <tr>
+                                    <td colspan="6" class="empty-state">
+                                        <div class="empty-icon">🎯</div>
+                                        还没有创建任务，请先在「任务管理」中添加学习任务
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div style="display:flex;gap:16px;flex-wrap:wrap;" id="summaryCards">
+                    <div class="card" style="flex:1;min-width:140px;text-align:center;">
+                        <div style="font-size:2.5rem;font-weight:800;color:var(--primary);" id="sumTasks">0</div>
+                        <div style="color:var(--text3);font-size:0.85rem;">总任务数</div>
+                    </div>
+                    <div class="card" style="flex:1;min-width:140px;text-align:center;">
+                        <div style="font-size:2.5rem;font-weight:800;color:var(--accent2);" id="sumKnowledge">0</div>
+                        <div style="color:var(--text3);font-size:0.85rem;">知识库条目</div>
+                    </div>
+                    <div class="card" style="flex:1;min-width:140px;text-align:center;">
+                        <div style="font-size:2.5rem;font-weight:800;color:var(--accent3);" id="sumQuestions">0</div>
+                        <div style="color:var(--text3);font-size:0.85rem;">总题目数</div>
+                    </div>
+                    <div class="card" style="flex:1;min-width:140px;text-align:center;">
+                        <div style="font-size:2.5rem;font-weight:800;color:var(--success);" id="sumNotes">0</div>
+                        <div style="color:var(--text3);font-size:0.85rem;">总笔记数</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-panel" id="panel-tasks">
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">🎯 学习任务</span>
+                        <button class="btn btn-primary" onclick="openTaskModal()">+ 新建任务</button>
+                    </div>
+                    <div id="taskListContainer" style="display:flex;flex-direction:column;gap:10px;">
+                        <div class="empty-state">
+                            <div class="empty-icon">📋</div>
+                            暂无任务，点击上方按钮创建你的第一个学习任务吧！
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-panel" id="panel-knowledge">
+                <div style="display:flex;gap:16px;flex-wrap:wrap;">
+                    <div class="card" style="flex:1;min-width:280px;">
+                        <div class="card-header">
+                            <span class="card-title">🌳 知识库树</span>
+                            <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                                <select id="knowledgeTaskFilter" onchange="renderKnowledgeTree()" style="padding:6px 10px;border-radius:14px;border:1.5px solid var(--border);font-size:0.8rem;background:var(--input-bg);color:var(--text);">
+                                    <option value="">全部任务</option>
+                                </select>
+                                <button class="btn btn-primary btn-sm" onclick="openKnowledgeNodeModal(null)">+ 添加</button>
+                            </div>
+                        </div>
+                        <div class="tree-container" id="knowledgeTreeContainer">
+                            <div class="empty-state"><div class="empty-icon">🌱</div>知识库为空，开始构建你的知识体系吧</div>
+                        </div>
+                    </div>
+                    <div class="card" style="flex:1;min-width:280px;" id="knowledgeDetailCard">
+                        <div class="card-header">
+                            <span class="card-title">📖 知识点详情</span>
+                            <span class="card-subtitle" id="knowledgeDetailPath">请选择左侧节点</span>
+                        </div>
+                        <div class="knowledge-content" id="knowledgeDetailContent">点击左侧知识树节点查看内容</div>
+                        <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;" id="knowledgeDetailActions"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-panel" id="panel-questions">
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">📝 题库</span>
+                        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                            <select id="questionTaskFilter" onchange="renderQuestions()" style="padding:6px 10px;border-radius:14px;border:1.5px solid var(--border);font-size:0.8rem;background:var(--input-bg);color:var(--text);">
+                                <option value="">全部任务</option>
+                            </select>
+                            <button class="btn btn-primary btn-sm" onclick="openQuestionModal()">+ 添加题目</button>
+                        </div>
+                    </div>
+                    <div id="questionListContainer" style="display:flex;flex-direction:column;gap:8px;max-height:60vh;overflow-y:auto;">
+                        <div class="empty-state"><div class="empty-icon">📝</div>题库为空，添加一些题目来练习吧</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-panel" id="panel-notes">
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">📒 学习笔记</span>
+                        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                            <select id="noteTaskFilter" onchange="renderNotes()" style="padding:6px 10px;border-radius:14px;border:1.5px solid var(--border);font-size:0.8rem;background:var(--input-bg);color:var(--text);">
+                                <option value="">全部任务</option>
+                            </select>
+                            <button class="btn btn-primary btn-sm" onclick="openNoteModal()">+ 新建笔记</button>
+                        </div>
+                    </div>
+                    <div id="noteListContainer" style="display:flex;flex-direction:column;gap:8px;max-height:60vh;overflow-y:auto;">
+                        <div class="empty-state"><div class="empty-icon">📒</div>还没有笔记，记录你的学习心得吧</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-panel" id="panel-mindmap">
+                <div class="card">
+                    <div class="card-header">
+                        <span class="card-title">🗺️ 知识导图</span>
+                        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                            <select id="mindmapTaskFilter" onchange="renderMindmap()" style="padding:6px 10px;border-radius:14px;border:1.5px solid var(--border);font-size:0.8rem;background:var(--input-bg);color:var(--text);">
+                                <option value="">全部任务</option>
+                            </select>
+                            <span class="card-subtitle">可视化知识结构</span>
+                        </div>
+                    </div>
+                    <div id="mindmapContainer" style="overflow:auto;padding:20px;min-height:350px;background:var(--input-bg);border-radius:var(--radius);border:1px dashed var(--border);">
+                        <div class="empty-state"><div class="empty-icon">🗺️</div>选择任务查看知识导图</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-panel" id="panel-settings">
+                <div class="card">
+                    <div class="card-header"><span class="card-title">⚙️ 设置</span></div>
+                    <div style="display:flex;flex-direction:column;gap:14px;">
+                        <div>
+                            <label style="font-weight:600;font-size:0.9rem;">暗色模式</label>
+                            <select id="settingDarkMode" style="width:100%;padding:10px;border-radius:8px;border:1.5px solid var(--border);font-size:0.9rem;margin-top:4px;background:var(--input-bg);color:var(--text);">
+                                <option value="auto">🌓 自动（19:00 - 06:00 暗色）</option>
+                                <option value="light">☀️ 始终亮色</option>
+                                <option value="dark">🌙 始终暗色</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label style="font-weight:600;font-size:0.9rem;">右上角标语</label>
+                            <input type="text" id="settingTopSlogan" placeholder="输入右上角标语..." value="✨ 数学是宇宙的语言" style="width:100%;padding:10px;border-radius:8px;border:1.5px solid var(--border);font-size:0.9rem;margin-top:4px;background:var(--input-bg);color:var(--text);">
+                        </div>
+                        <div>
+                            <label style="font-weight:600;font-size:0.9rem;">底部标语</label>
+                            <input type="text" id="settingBottomSlogan" placeholder="输入底部标语..." value="每天进步一点点，数学之路无限远" style="width:100%;padding:10px;border-radius:8px;border:1.5px solid var(--border);font-size:0.9rem;margin-top:4px;background:var(--input-bg);color:var(--text);">
+                        </div>
+                        <div>
+                            <label style="font-weight:600;font-size:0.9rem;">成长目标（知识点条目数）</label>
+                            <input type="number" id="settingGrowthTarget" placeholder="例如：100" value="100" min="10" style="width:100%;padding:10px;border-radius:8px;border:1.5px solid var(--border);font-size:0.9rem;margin-top:4px;background:var(--input-bg);color:var(--text);">
+                            <span style="font-size:0.75rem;color:var(--text3);">成长条基于知识库条目+题目数+笔记数综合计算</span>
+                        </div>
+                        <button class="btn btn-primary" onclick="saveSettings()">💾 保存设置</button>
+                        <hr style="border-color:var(--border);">
+                        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+                            <button class="btn btn-outline btn-sm" onclick="exportAllData()">📥 导出数据</button>
+                            <button class="btn btn-outline btn-sm" onclick="document.getElementById('importFileInput').click()">📤 导入数据</button>
+                            <input type="file" id="importFileInput" accept=".json" style="display:none;" onchange="importAllData(event)">
+                            <button class="btn btn-danger btn-sm" onclick="resetAllData()">⚠️ 重置全部数据</button>
+                        </div>
+                    </div>
+<div style="font-size:0.75rem;color:var(--text3);margin-top:12px;text-align:center;line-height:1.8;border-top:1px solid var(--border);padding-top:10px;">
+    <div>💡 注意：数据留存本地浏览器，不会上传</div>
+    <div>📧 反馈：maker341225@outlook.com</div>
+</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="bottom-bar" id="bottomBar" title="点击编辑底部标语">
+        💬 <span id="bottomSloganText">每天进步一点点，数学之路无限远</span>
+        <span class="edit-hint">（点击编辑）</span>
+    </div>
+
+    <div id="modalContainer"></div>
+
+    <script>
+        (function() {
+            const STORAGE_KEY = 'math_workbench_data_v2';
+
+            function getDefaultData() {
+                return {
+                    tasks: [],
+                    knowledgeNodes: [],
+                    questions: [],
+                    notes: [],
+                    slogans: {
+                        topRight: '✨ 数学是宇宙的语言',
+                        bottom: '每天进步一点点，数学之路无限远'
+                    },
+                    growthTarget: 100,
+                    settings: {
+                        darkMode: 'auto'
+                    },
+                    nextId: 1
+                };
+            }
+
+            function loadData() {
+                try {
+                    const raw = localStorage.getItem(STORAGE_KEY);
+                    if (raw) {
+                        const data = JSON.parse(raw);
+                        if (!data.knowledgeNodes) data.knowledgeNodes = [];
+                        if (!data.questions) data.questions = [];
+                        if (!data.notes) data.notes = [];
+                        if (!data.slogans) data.slogans = { topRight: '✨ 数学是宇宙的语言',
+                            bottom: '每天进步一点点，数学之路无限远' };
+                        if (!data.growthTarget) data.growthTarget = 100;
+                        if (!data.settings) data.settings = { darkMode: 'auto' };
+                        if (!data.nextId) data.nextId = 1;
+                        return data;
+                    }
+                } catch (e) { console.warn('数据加载失败', e); }
+                return getDefaultData();
+            }
+
+            function saveData(data) {
+                try {
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+                } catch (e) {
+                    alert('存储空间不足，请清理数据或导出备份。');
+                }
+            }
+
+            let appData = loadData();
+
+            function generateId() {
+                return 'id_' + (appData.nextId++);
+            }
+
+            function persistData() {
+                saveData(appData);
+                updateAllUI();
+            }
+
+            // 暗色主题控制
+            function applyTheme() {
+                const mode = appData.settings.darkMode || 'auto';
+                const hour = new Date().getHours();
+                const isDark = mode === 'dark' || (mode === 'auto' && (hour >= 19 || hour < 6));
+                document.body.setAttribute('data-theme', isDark ? 'dark' : 'light');
+            }
+
+            function updateAllUI() {
+                updateGrowthBar();
+                updateBadges();
+                updateDashboard();
+                updateTaskFilters();
+                updateKnowledgeTaskFilter();
+                updateQuestionTaskFilter();
+                updateNoteTaskFilter();
+                updateMindmapTaskFilter();
+                updateSlogans();
+                const activePanel = document.querySelector('.content-panel.active');
+                if (activePanel) {
+                    const panelId = activePanel.id;
+                    if (panelId === 'panel-knowledge') renderKnowledgeTree();
+                    if (panelId === 'panel-questions') renderQuestions();
+                    if (panelId === 'panel-notes') renderNotes();
+                    if (panelId === 'panel-mindmap') renderMindmap();
+                    if (panelId === 'panel-tasks') renderTasks();
+                    if (panelId === 'panel-dashboard') updateDashboard();
+                }
+            }
+
+            function updateGrowthBar() {
+                const totalKnowledge = appData.knowledgeNodes.filter(n => n.type === 'item').length;
+                const totalQuestions = appData.questions.length;
+                const totalNotes = appData.notes.length;
+                const target = Math.max(10, appData.growthTarget || 100);
+                const score = Math.min(100, Math.round(
+                    (Math.min(totalKnowledge / target, 1) * 40) +
+                    (Math.min(totalQuestions / (target * 1.5), 1) * 40) +
+                    (Math.min(totalNotes / (target * 0.5), 1) * 20)
+                ));
+                const bar = document.getElementById('growthBarInner');
+                const percent = document.getElementById('growthPercent');
+                if (bar) bar.style.width = score + '%';
+                if (percent) percent.textContent = score + '%';
+            }
+
+            function updateBadges() {
+                const taskCount = appData.tasks.length;
+                const knowledgeCount = appData.knowledgeNodes.filter(n => n.type === 'item').length;
+                const questionCount = appData.questions.length;
+                const noteCount = appData.notes.length;
+                setBadge('taskCountBadge', taskCount);
+                setBadge('knowledgeCountBadge', knowledgeCount);
+                setBadge('questionCountBadge', questionCount);
+                setBadge('noteCountBadge', noteCount);
+                const sumTasks = document.getElementById('sumTasks');
+                const sumKnowledge = document.getElementById('sumKnowledge');
+                const sumQuestions = document.getElementById('sumQuestions');
+                const sumNotes = document.getElementById('sumNotes');
+                if (sumTasks) sumTasks.textContent = taskCount;
+                if (sumKnowledge) sumKnowledge.textContent = knowledgeCount;
+                if (sumQuestions) sumQuestions.textContent = questionCount;
+                if (sumNotes) sumNotes.textContent = noteCount;
+            }
+
+            function setBadge(id, val) {
+                const el = document.getElementById(id);
+                if (el) el.textContent = val;
+            }
+
+            function updateSlogans() {
+                const topEl = document.getElementById('topRightSlogan');
+                const bottomEl = document.getElementById('bottomSloganText');
+                if (topEl) topEl.textContent = appData.slogans.topRight || '✨ 数学是宇宙的语言';
+                if (bottomEl) bottomEl.textContent = appData.slogans.bottom || '每天进步一点点，数学之路无限远';
+                const settingTop = document.getElementById('settingTopSlogan');
+                const settingBottom = document.getElementById('settingBottomSlogan');
+                const settingTarget = document.getElementById('settingGrowthTarget');
+                const settingDark = document.getElementById('settingDarkMode');
+                if (settingTop) settingTop.value = appData.slogans.topRight || '';
+                if (settingBottom) settingBottom.value = appData.slogans.bottom || '';
+                if (settingTarget) settingTarget.value = appData.growthTarget || 100;
+                if (settingDark) settingDark.value = appData.settings.darkMode || 'auto';
+            }
+
+            function updateDashboard() {
+                const tbody = document.getElementById('dashboardTableBody');
+                if (!tbody) return;
+                if (appData.tasks.length === 0) {
+                    tbody.innerHTML =
+                        '<tr><td colspan="6" class="empty-state"><div class="empty-icon">🎯</div>还没有创建任务，请先在「任务管理」中添加学习任务</td></tr>';
+                    return;
+                }
+                let html = '';
+                appData.tasks.forEach(task => {
+                    const qCount = appData.questions.filter(q => q.taskId === task.id).length;
+                    const kCount = appData.knowledgeNodes.filter(n => n.taskId === task.id && n.type ===
+                        'item').length;
+                    const nCount = appData.notes.filter(n => n.taskId === task.id).length;
+                    const richness = Math.min(100, Math.round((kCount + qCount + nCount) / 3 * 10));
+                    const richnessColor = richness >= 70 ? 'var(--success)' : richness >= 35 ?
+                        'var(--warning)' : 'var(--danger)';
+                    html += `
+                <tr>
+                  <td><span class="tag tag-task" style="background:${task.color || '#eef1ff'};color:${task.color ? '#fff' : '#4A6CF7'};padding:4px 12px;border-radius:14px;">${escapeHtml(task.name)}</span></td>
+                  <td class="cell-highlight">${qCount}</td>
+                  <td class="cell-highlight" style="color:var(--accent2);">${kCount}</td>
+                  <td class="cell-highlight" style="color:var(--success);">${nCount}</td>
+                  <td>
+                    <div class="progress-mini"><div class="progress-mini-fill" style="width:${richness}%;background:${richnessColor};"></div></div>
+                    <span style="font-size:0.7rem;color:${richnessColor};">${richness}%</span>
+                  </td>
+                  <td><button class="btn btn-outline btn-sm" onclick="switchToTask('${task.id}')">查看</button></td>
+                </tr>`;
+                });
+                tbody.innerHTML = html;
+            }
+
+            function updateTaskFilters() {}
+
+            function updateKnowledgeTaskFilter() {
+                const sel = document.getElementById('knowledgeTaskFilter');
+                if (!sel) return;
+                const currentVal = sel.value;
+                sel.innerHTML = '<option value="">全部任务</option>' + appData.tasks.map(t =>
+                    `<option value="${t.id}">${escapeHtml(t.name)}</option>`
+                ).join('');
+                sel.value = currentVal;
+            }
+
+            function updateQuestionTaskFilter() {
+                const sel = document.getElementById('questionTaskFilter');
+                if (!sel) return;
+                const currentVal = sel.value;
+                sel.innerHTML = '<option value="">全部任务</option>' + appData.tasks.map(t =>
+                    `<option value="${t.id}">${escapeHtml(t.name)}</option>`
+                ).join('');
+                sel.value = currentVal;
+            }
+
+            function updateNoteTaskFilter() {
+                const sel = document.getElementById('noteTaskFilter');
+                if (!sel) return;
+                const currentVal = sel.value;
+                sel.innerHTML = '<option value="">全部任务</option>' + appData.tasks.map(t =>
+                    `<option value="${t.id}">${escapeHtml(t.name)}</option>`
+                ).join('');
+                sel.value = currentVal;
+            }
+
+            function updateMindmapTaskFilter() {
+                const sel = document.getElementById('mindmapTaskFilter');
+                if (!sel) return;
+                const currentVal = sel.value;
+                sel.innerHTML = '<option value="">全部任务</option>' + appData.tasks.map(t =>
+                    `<option value="${t.id}">${escapeHtml(t.name)}</option>`
+                ).join('');
+                sel.value = currentVal;
+            }
+
+            function renderTasks() {
+                const container = document.getElementById('taskListContainer');
+                if (!container) return;
+                if (appData.tasks.length === 0) {
+                    container.innerHTML =
+                        '<div class="empty-state"><div class="empty-icon">📋</div>暂无任务，点击上方按钮创建你的第一个学习任务吧！</div>';
+                    return;
+                }
+                container.innerHTML = appData.tasks.map(task => {
+                    const qCount = appData.questions.filter(q => q.taskId === task.id).length;
+                    const kCount = appData.knowledgeNodes.filter(n => n.taskId === task.id && n.type ===
+                        'item').length;
+                    const nCount = appData.notes.filter(n => n.taskId === task.id).length;
+                    return `
+                <div class="card" style="padding:14px 18px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
+                  <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+                    <span style="width:14px;height:14px;border-radius:50%;background:${task.color || '#4A6CF7'};flex-shrink:0;"></span>
+                    <strong>${escapeHtml(task.name)}</strong>
+                    <span style="font-size:0.75rem;color:var(--text3);">${task.description ? escapeHtml(task.description) : '无描述'}</span>
+                    <span style="font-size:0.7rem;color:var(--text3);">📝${qCount} 🌳${kCount} 📒${nCount}</span>
+                  </div>
+                  <div style="display:flex;gap:6px;">
+                    <button class="btn btn-outline btn-sm" onclick="editTask('${task.id}')">✏️ 编辑</button>
+                    <button class="btn btn-danger btn-sm" onclick="deleteTask('${task.id}')">🗑️</button>
+                  </div>
+                </div>`;
+                }).join('');
+            }
+
+            function openTaskModal(taskId = null) {
+                const task = taskId ? appData.tasks.find(t => t.id === taskId) : null;
+                const modal = document.getElementById('modalContainer');
+                modal.innerHTML = `
+              <div class="modal-overlay" id="currentModalOverlay">
+                <div class="modal">
+                  <h3>${task ? '编辑任务' : '新建任务'}</h3>
+                  <input type="text" id="modalTaskName" placeholder="任务名称" value="${task ? escapeHtml(task.name) : ''}">
+                  <input type="text" id="modalTaskDesc" placeholder="任务描述（可选）" value="${task ? escapeHtml(task.description || '') : ''}">
+                  <label style="font-size:0.85rem;">任务颜色</label>
+                  <input type="color" id="modalTaskColor" value="${task ? task.color : '#4A6CF7'}" style="width:60px;height:36px;border:none;cursor:pointer;">
+                  <div class="modal-actions">
+                    <button class="btn btn-outline" onclick="closeModal()">取消</button>
+                    <button class="btn btn-primary" id="modalSaveBtn">保存</button>
+                  </div>
+                </div>
+              </div>`;
+                document.getElementById('modalSaveBtn').addEventListener('click', () => {
+                    const name = document.getElementById('modalTaskName').value.trim();
+                    if (!name) { alert('请输入任务名称'); return; }
+                    const desc = document.getElementById('modalTaskDesc').value.trim();
+                    const color = document.getElementById('modalTaskColor').value;
+                    if (task) {
+                        task.name = name;
+                        task.description = desc;
+                        task.color = color;
+                    } else {
+                        appData.tasks.push({ id: generateId(), name, description: desc, color,
+                            createdAt: new Date().toISOString() });
+                    }
+                    persistData();
+                    renderTasks();
+                    closeModal();
+                });
+            }
+
+            function editTask(taskId) { openTaskModal(taskId); }
+
+            function deleteTask(taskId) {
+                if (!confirm('确定删除此任务吗？相关联的知识库节点、题目和笔记也会被删除。')) return;
+                appData.tasks = appData.tasks.filter(t => t.id !== taskId);
+                appData.knowledgeNodes = appData.knowledgeNodes.filter(n => n.taskId !== taskId);
+                appData.questions = appData.questions.filter(q => q.taskId !== taskId);
+                appData.notes = appData.notes.filter(n => n.taskId !== taskId);
+                persistData();
+                renderTasks();
+            }
+
+            function switchToTask(taskId) {
+                document.getElementById('knowledgeTaskFilter').value = taskId;
+                document.querySelectorAll('.sidebar-nav-item').forEach(el => el.classList.remove('active'));
+                const knowledgeNav = document.querySelector('.sidebar-nav-item[data-panel="knowledge"]');
+                if (knowledgeNav) knowledgeNav.classList.add('active');
+                document.querySelectorAll('.content-panel').forEach(el => el.classList.remove('active'));
+                const panel = document.getElementById('panel-knowledge');
+                if (panel) panel.classList.add('active');
+                renderKnowledgeTree();
+            }
+
+            function getKnowledgeChildren(parentId, taskId) {
+                return appData.knowledgeNodes.filter(n => {
+                    const pMatch = (parentId === null && n.parentId === null) || (n.parentId === parentId);
+                    const tMatch = !taskId || n.taskId === taskId;
+                    return pMatch && tMatch;
+                }).sort((a, b) => (a.order || 0) - (b.order || 0));
+            }
+
+            function renderKnowledgeTree() {
+                const container = document.getElementById('knowledgeTreeContainer');
+                const taskFilter = document.getElementById('knowledgeTaskFilter')?.value || '';
+                if (!container) return;
+                if (appData.tasks.length === 0) {
+                    container.innerHTML =
+                        '<div class="empty-state"><div class="empty-icon">🎯</div>请先在「任务管理」中创建任务</div>';
+                    return;
+                }
+                if (taskFilter) {
+                    const roots = getKnowledgeChildren(null, taskFilter);
+                    if (roots.length === 0) {
+                        container.innerHTML =
+                            '<div class="empty-state"><div class="empty-icon">🌱</div>该任务下暂无知识节点</div>';
+                        return;
+                    }
+                    container.innerHTML = roots.map(n => renderTreeNode(n, 0, taskFilter)).join('');
+                } else {
+                    if (appData.knowledgeNodes.length === 0) {
+                        container.innerHTML =
+                            '<div class="empty-state"><div class="empty-icon">🌱</div>知识库为空</div>';
+                        return;
+                    }
+                    let html = '';
+                    appData.tasks.forEach(task => {
+                        const roots = getKnowledgeChildren(null, task.id);
+                        if (roots.length > 0) {
+                            html +=
+                            `<div style="font-weight:700;padding:8px 0;color:${task.color};margin-top:4px;">📁 ${escapeHtml(task.name)}</div>`;
+                            html += roots.map(n => renderTreeNode(n, 0, task.id)).join('');
+                        }
+                    });
+                    container.innerHTML = html || '<div class="empty-state"><div class="empty-icon">🌱</div>知识库为空</div>';
+                }
+                container.querySelectorAll('.tree-toggle').forEach(toggle => {
+                    toggle.addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        const childrenEl = this.closest('.tree-node')?.querySelector(
+                        ':scope > .tree-children');
+                        if (childrenEl) {
+                            const isCollapsed = childrenEl.classList.contains('collapsed');
+                            if (isCollapsed) {
+                                childrenEl.classList.remove('collapsed');
+                                childrenEl.style.maxHeight = childrenEl.scrollHeight + 'px';
+                                this.textContent = '▼';
+                            } else {
+                                childrenEl.style.maxHeight = childrenEl.scrollHeight + 'px';
+                                requestAnimationFrame(() => {
+                                    childrenEl.classList.add('collapsed');
+                                    childrenEl.style.maxHeight = '0px';
+                                });
+                                this.textContent = '▶';
+                            }
+                        }
+                    });
+                });
+                container.querySelectorAll('.tree-row').forEach(row => {
+                    row.addEventListener('click', function(e) {
+                        if (e.target.closest('.tree-toggle') || e.target.closest('.tree-actions'))
+                            return;
+                        const nodeId = this.dataset.nodeId;
+                        selectKnowledgeNode(nodeId);
+                    });
+                });
+                container.querySelectorAll('.tree-node').forEach(node => {
+                    const childrenEl = node.querySelector(':scope > .tree-children');
+                    if (childrenEl && node.classList.contains('root')) {
+                        childrenEl.style.maxHeight = childrenEl.scrollHeight + 'px';
+                    }
+                });
+            }
+
+            function renderTreeNode(node, depth, taskFilter) {
+                const children = getKnowledgeChildren(node.id, taskFilter);
+                const hasChildren = children.length > 0;
+                // 知识点条目也可以有子节点，图标区分
+                const icon = node.type === 'folder' ? '📁' : (hasChildren ? '📑' : '📄');
+                const nameClass = node.type === 'folder' ? 'folder-name' : 'item-name';
+                const childrenHtml = hasChildren ? children.map(n => renderTreeNode(n, depth + 1, taskFilter)).join('') :
+                    '';
+                const maxH = hasChildren ? 'max-height:1000px;' : 'max-height:0;';
+                return `
+            <div class="tree-node ${depth === 0 ? 'root' : ''}" data-node-id="${node.id}">
+              <div class="tree-row" data-node-id="${node.id}">
+                <span class="tree-toggle ${hasChildren ? '' : 'empty'}">${hasChildren ? '▼' : ''}</span>
+                <span class="tree-icon">${icon}</span>
+                <span class="tree-name ${nameClass}">${escapeHtml(node.name)}</span>
+                <span class="tree-actions">
+                  <button class="btn btn-outline btn-sm" style="padding:2px 8px;font-size:0.65rem;" onclick="event.stopPropagation();openKnowledgeNodeModal('${node.id}')" title="添加子节点">+</button>
+                  <button class="btn btn-outline btn-sm" style="padding:2px 8px;font-size:0.65rem;" onclick="event.stopPropagation();editKnowledgeNode('${node.id}')" title="编辑">✏️</button>
+                  <button class="btn btn-danger btn-sm" style="padding:2px 8px;font-size:0.65rem;" onclick="event.stopPropagation();deleteKnowledgeNode('${node.id}')" title="删除">×</button>
+                </span>
+              </div>
+              <div class="tree-children" style="${maxH}">${childrenHtml}</div>
+            </div>`;
+            }
+
+            function selectKnowledgeNode(nodeId) {
+                const node = appData.knowledgeNodes.find(n => n.id === nodeId);
+                if (!node) return;
+                document.querySelectorAll('.tree-row').forEach(r => r.classList.remove('selected'));
+                const row = document.querySelector(`.tree-row[data-node-id="${nodeId}"]`);
+                if (row) row.classList.add('selected');
+                const detailCard = document.getElementById('knowledgeDetailCard');
+                const detailPath = document.getElementById('knowledgeDetailPath');
+                const detailContent = document.getElementById('knowledgeDetailContent');
+                const detailActions = document.getElementById('knowledgeDetailActions');
+                if (detailPath) detailPath.textContent = '路径：' + getNodePath(node);
+                if (detailContent) {
+                    if (node.content) {
+                        detailContent.textContent = node.content;
+                    } else if (node.type === 'folder' || getKnowledgeChildren(node.id, node.taskId).length > 0) {
+                        detailContent.textContent = '📁 这是一个可包含子节点的节点，点击左侧箭头展开查看。';
+                    } else {
+                        detailContent.textContent = '（暂无内容，点击编辑添加知识点内容）';
+                    }
+                }
+                if (detailActions) {
+                    detailActions.innerHTML = `
+                <button class="btn btn-outline btn-sm" onclick="editKnowledgeNode('${node.id}')">✏️ 编辑节点</button>
+                <button class="btn btn-outline btn-sm" onclick="openKnowledgeNodeModal('${node.id}')">+ 添加子节点</button>`;
+                }
+                if (detailCard) detailCard.style.display = '';
+            }
+
+            function getNodePath(node) {
+                const parts = [node.name];
+                let current = node;
+                while (current.parentId) {
+                    current = appData.knowledgeNodes.find(n => n.id === current.parentId);
+                    if (current) parts.unshift(current.name);
+                    else break;
+                }
+                const task = appData.tasks.find(t => t.id === node.taskId);
+                if (task) parts.unshift(task.name);
+                return parts.join(' > ');
+            }
+
+            function openKnowledgeNodeModal(parentId = null) {
+                const parentNode = parentId ? appData.knowledgeNodes.find(n => n.id === parentId) : null;
+                const taskFilter = document.getElementById('knowledgeTaskFilter')?.value || (parentNode ? parentNode.taskId :
+                    '');
+                const modal = document.getElementById('modalContainer');
+                modal.innerHTML = `
+              <div class="modal-overlay" id="currentModalOverlay">
+                <div class="modal">
+                  <h3>${parentNode ? '在「' + escapeHtml(parentNode.name) + '」下添加节点' : '添加根节点'}</h3>
+                  <select id="modalNodeTask" style="width:100%;padding:10px;border-radius:8px;border:1.5px solid var(--border);background:var(--input-bg);color:var(--text);">
+                    <option value="">选择所属任务</option>
+                    ${appData.tasks.map(t => `<option value="${t.id}" ${t.id === taskFilter ? 'selected' : ''}>${escapeHtml(t.name)}</option>`).join('')}
+                  </select>
+                  <input type="text" id="modalNodeName" placeholder="节点名称">
+                  <select id="modalNodeType" style="width:100%;padding:10px;border-radius:8px;border:1.5px solid var(--border);background:var(--input-bg);color:var(--text);">
+                    <option value="folder">📁 文件夹（可包含子节点）</option>
+                    <option value="item">📄 知识点条目（也可包含子节点）</option>
+                  </select>
+                  <textarea id="modalNodeContent" placeholder="知识点内容（可选）"></textarea>
+                  <div class="modal-actions">
+                    <button class="btn btn-outline" onclick="closeModal()">取消</button>
+                    <button class="btn btn-primary" id="modalSaveNodeBtn">保存</button>
+                  </div>
+                </div>
+              </div>`;
+                document.getElementById('modalSaveNodeBtn').addEventListener('click', () => {
+                    const taskId = document.getElementById('modalNodeTask').value;
+                    const name = document.getElementById('modalNodeName').value.trim();
+                    const type = document.getElementById('modalNodeType').value;
+                    const content = document.getElementById('modalNodeContent').value.trim();
+                    if (!taskId) { alert('请选择所属任务'); return; }
+                    if (!name) { alert('请输入节点名称'); return; }
+                    const newNode = {
+                        id: generateId(),
+                        taskId,
+                        parentId: parentId,
+                        name,
+                        type,
+                        content: content,
+                        order: appData.knowledgeNodes.filter(n => n.parentId === parentId && n
+                            .taskId === taskId).length,
+                        createdAt: new Date().toISOString()
+                    };
+                    appData.knowledgeNodes.push(newNode);
+                    persistData();
+                    renderKnowledgeTree();
+                    closeModal();
+                });
+            }
+
+            function editKnowledgeNode(nodeId) {
+                const node = appData.knowledgeNodes.find(n => n.id === nodeId);
+                if (!node) return;
+                const modal = document.getElementById('modalContainer');
+                modal.innerHTML = `
+              <div class="modal-overlay" id="currentModalOverlay">
+                <div class="modal">
+                  <h3>编辑节点</h3>
+                  <input type="text" id="modalNodeName" value="${escapeHtml(node.name)}" placeholder="节点名称">
+                  <select id="modalNodeType" style="width:100%;padding:10px;border-radius:8px;border:1.5px solid var(--border);background:var(--input-bg);color:var(--text);">
+                    <option value="folder" ${node.type==='folder'?'selected':''}>📁 文件夹</option>
+                    <option value="item" ${node.type==='item'?'selected':''}>📄 知识点条目</option>
+                  </select>
+                  <textarea id="modalNodeContent" placeholder="知识点内容">${escapeHtml(node.content || '')}</textarea>
+                  <div class="modal-actions">
+                    <button class="btn btn-outline" onclick="closeModal()">取消</button>
+                    <button class="btn btn-primary" id="modalSaveEditBtn">保存</button>
+                  </div>
+                </div>
+              </div>`;
+                document.getElementById('modalSaveEditBtn').addEventListener('click', () => {
+                    node.name = document.getElementById('modalNodeName').value.trim();
+                    node.type = document.getElementById('modalNodeType').value;
+                    node.content = document.getElementById('modalNodeContent').value.trim();
+                    if (!node.name) { alert('名称不能为空'); return; }
+                    persistData();
+                    renderKnowledgeTree();
+                    selectKnowledgeNode(nodeId);
+                    closeModal();
+                });
+            }
+
+            function deleteKnowledgeNode(nodeId) {
+                if (!confirm('确定删除此节点及其所有子节点吗？此操作不可恢复。')) return;
+                function deleteRecursive(id) {
+                    const children = appData.knowledgeNodes.filter(n => n.parentId === id);
+                    children.forEach(c => deleteRecursive(c.id));
+                    appData.knowledgeNodes = appData.knowledgeNodes.filter(n => n.id !== id);
+                }
+                deleteRecursive(nodeId);
+                persistData();
+                renderKnowledgeTree();
+                document.getElementById('knowledgeDetailContent').textContent = '点击左侧知识树节点查看内容';
+            }
+
+            function renderQuestions() {
+                const container = document.getElementById('questionListContainer');
+                const taskFilter = document.getElementById('questionTaskFilter')?.value || '';
+                if (!container) return;
+                let questions = appData.questions;
+                if (taskFilter) questions = questions.filter(q => q.taskId === taskFilter);
+                if (questions.length === 0) {
+                    container.innerHTML =
+                        '<div class="empty-state"><div class="empty-icon">📝</div>该筛选条件下暂无题目</div>';
+                    return;
+                }
+                container.innerHTML = questions.map(q => {
+                    const task = appData.tasks.find(t => t.id === q.taskId);
+                    const diffTag = q.difficulty === 'easy' ? 'tag-easy' : q.difficulty === 'hard' ?
+                        'tag-hard' : 'tag-medium';
+                    const diffLabel = q.difficulty === 'easy' ? '简单' : q.difficulty === 'hard' ? '困难' :
+                        '中等';
+                    return `
+                <div class="card" style="padding:14px 18px;">
+                  <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px;">
+                    <div style="flex:1;min-width:200px;">
+                      <strong>📝 ${escapeHtml(q.question.substring(0, 80))}${q.question.length>80?'...':''}</strong>
+                      <div style="font-size:0.75rem;color:var(--text3);margin-top:4px;">
+                        ${task ? '<span class="tag tag-task">'+escapeHtml(task.name)+'</span>' : ''}
+                        <span class="tag ${diffTag}">${diffLabel}</span>
+                        ${q.tags ? q.tags.map(t=>'<span class="tag" style="background:#f0f0f0;">'+escapeHtml(t)+'</span>').join('') : ''}
+                      </div>
+                    </div>
+                    <div style="display:flex;gap:4px;">
+                      <button class="btn btn-outline btn-sm" onclick="viewQuestion('${q.id}')">👁️ 查看</button>
+                      <button class="btn btn-outline btn-sm" onclick="editQuestion('${q.id}')">✏️</button>
+                      <button class="btn btn-danger btn-sm" onclick="deleteQuestion('${q.id}')">×</button>
+                    </div>
+                  </div>
+                </div>`;
+                }).join('');
+            }
+
+            function openQuestionModal(questionId = null) {
+                const q = questionId ? appData.questions.find(x => x.id === questionId) : null;
+                const taskFilter = document.getElementById('questionTaskFilter')?.value || '';
+                const modal = document.getElementById('modalContainer');
+                modal.innerHTML = `
+              <div class="modal-overlay" id="currentModalOverlay">
+                <div class="modal" style="max-width:650px;">
+                  <h3>${q ? '编辑题目' : '添加题目'}</h3>
+                  <select id="modalQTask" style="width:100%;padding:10px;border-radius:8px;border:1.5px solid var(--border);background:var(--input-bg);color:var(--text);">
+                    <option value="">选择所属任务</option>
+                    ${appData.tasks.map(t => `<option value="${t.id}" ${(q?q.taskId:taskFilter)===t.id?'selected':''}>${escapeHtml(t.name)}</option>`).join('')}
+                  </select>
+                  <textarea id="modalQQuestion" placeholder="题目内容（可复制粘贴）" style="min-height:80px;">${q ? escapeHtml(q.question) : ''}</textarea>
+                  <textarea id="modalQAnswer" placeholder="答案" style="min-height:60px;">${q ? escapeHtml(q.answer) : ''}</textarea>
+                  <textarea id="modalQAnalysis" placeholder="解析（可选）" style="min-height:80px;">${q ? escapeHtml(q.analysis || '') : ''}</textarea>
+                  <div style="display:flex;gap:10px;flex-wrap:wrap;">
+                    <select id="modalQDifficulty" style="flex:1;padding:8px;border-radius:8px;border:1.5px solid var(--border);background:var(--input-bg);color:var(--text);">
+                      <option value="easy" ${q&&q.difficulty==='easy'?'selected':''}>🟢 简单</option>
+                      <option value="medium" ${!q||q.difficulty==='medium'?'selected':''}>🟡 中等</option>
+                      <option value="hard" ${q&&q.difficulty==='hard'?'selected':''}>🔴 困难</option>
+                    </select>
+                    <input type="text" id="modalQTags" placeholder="标签（逗号分隔）" value="${q&&q.tags ? q.tags.join(',') : ''}" style="flex:2;padding:8px;border-radius:8px;border:1.5px solid var(--border);background:var(--input-bg);color:var(--text);">
+                  </div>
+                  <div class="modal-actions">
+                    <button class="btn btn-outline" onclick="closeModal()">取消</button>
+                    <button class="btn btn-primary" id="modalSaveQBtn">保存</button>
+                  </div>
+                </div>
+              </div>`;
+                document.getElementById('modalSaveQBtn').addEventListener('click', () => {
+                    const taskId = document.getElementById('modalQTask').value;
+                    const question = document.getElementById('modalQQuestion').value.trim();
+                    const answer = document.getElementById('modalQAnswer').value.trim();
+                    const analysis = document.getElementById('modalQAnalysis').value.trim();
+                    const difficulty = document.getElementById('modalQDifficulty').value;
+                    const tagsStr = document.getElementById('modalQTags').value.trim();
+                    const tags = tagsStr ? tagsStr.split(',').map(s => s.trim()).filter(Boolean) : [];
+                    if (!taskId || !question || !answer) { alert('请填写任务、题目和答案'); return; }
+                    if (q) {
+                        q.taskId = taskId;
+                        q.question = question;
+                        q.answer = answer;
+                        q.analysis = analysis;
+                        q.difficulty = difficulty;
+                        q.tags = tags;
+                        q.updatedAt = new Date().toISOString();
+                    } else {
+                        appData.questions.push({
+                            id: generateId(),
+                            taskId,
+                            question,
+                            answer,
+                            analysis,
+                            difficulty,
+                            tags,
+                            createdAt: new Date().toISOString(),
+                            updatedAt: new Date().toISOString()
+                        });
+                    }
+                    persistData();
+                    renderQuestions();
+                    closeModal();
+                });
+            }
+
+            function viewQuestion(questionId) {
+                const q = appData.questions.find(x => x.id === questionId);
+                if (!q) return;
+                const task = appData.tasks.find(t => t.id === q.taskId);
+                const modal = document.getElementById('modalContainer');
+                modal.innerHTML = `
+              <div class="modal-overlay" id="currentModalOverlay">
+                <div class="modal" style="max-width:650px;">
+                  <h3>📝 题目详情</h3>
+                  <div style="font-size:0.8rem;color:var(--text3);">任务：${task?escapeHtml(task.name):'未知'} | 难度：${q.difficulty}</div>
+                  <div style="font-weight:700;margin-top:8px;">题目：</div>
+                  <div class="knowledge-content">${escapeHtml(q.question)}</div>
+                  <div style="font-weight:700;">答案：</div>
+                  <div class="knowledge-content">${escapeHtml(q.answer)}</div>
+                  ${q.analysis ? '<div style="font-weight:700;">解析：</div><div class="knowledge-content">'+escapeHtml(q.analysis)+'</div>' : ''}
+                  <div class="modal-actions">
+                    <button class="btn btn-outline" onclick="closeModal()">关闭</button>
+                    <button class="btn btn-primary" onclick="closeModal();editQuestion('${q.id}')">✏️ 编辑</button>
+                  </div>
+                </div>
+              </div>`;
+            }
+
+            function editQuestion(questionId) { openQuestionModal(questionId); }
+
+            function deleteQuestion(questionId) {
+                if (!confirm('确定删除此题吗？')) return;
+                appData.questions = appData.questions.filter(q => q.id !== questionId);
+                persistData();
+                renderQuestions();
+            }
+
+            function renderNotes() {
+                const container = document.getElementById('noteListContainer');
+                const taskFilter = document.getElementById('noteTaskFilter')?.value || '';
+                if (!container) return;
+                let notes = appData.notes;
+                if (taskFilter) notes = notes.filter(n => n.taskId === taskFilter);
+                if (notes.length === 0) {
+                    container.innerHTML =
+                        '<div class="empty-state"><div class="empty-icon">📒</div>该筛选条件下暂无笔记</div>';
+                    return;
+                }
+                container.innerHTML = notes.sort((a, b) => new Date(b.updatedAt || b.createdAt) - new Date(a.updatedAt || a
+                    .createdAt)).map(n => {
+                    const task = appData.tasks.find(t => t.id === n.taskId);
+                    const preview = n.content ? n.content.substring(0, 120) : '';
+                    return `
+                <div class="card" style="padding:14px 18px;">
+                  <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px;">
+                    <div style="flex:1;min-width:200px;">
+                      <strong>📒 ${escapeHtml(n.title)}</strong>
+                      <div style="font-size:0.75rem;color:var(--text3);">${task?'<span class="tag tag-task">'+escapeHtml(task.name)+'</span> ':''}${new Date(n.updatedAt||n.createdAt).toLocaleDateString()}</div>
+                      <div style="font-size:0.8rem;color:var(--text2);margin-top:4px;">${escapeHtml(preview)}${n.content&&n.content.length>120?'...':''}</div>
+                    </div>
+                    <div style="display:flex;gap:4px;">
+                      <button class="btn btn-outline btn-sm" onclick="viewNote('${n.id}')">👁️</button>
+                      <button class="btn btn-outline btn-sm" onclick="editNote('${n.id}')">✏️</button>
+                      <button class="btn btn-danger btn-sm" onclick="deleteNote('${n.id}')">×</button>
+                    </div>
+                  </div>
+                </div>`;
+                }).join('');
+            }
+
+            function openNoteModal(noteId = null) {
+                const note = noteId ? appData.notes.find(n => n.id === noteId) : null;
+                const taskFilter = document.getElementById('noteTaskFilter')?.value || '';
+                const modal = document.getElementById('modalContainer');
+                modal.innerHTML = `
+              <div class="modal-overlay" id="currentModalOverlay">
+                <div class="modal" style="max-width:650px;">
+                  <h3>${note ? '编辑笔记' : '新建笔记'}</h3>
+                  <select id="modalNoteTask" style="width:100%;padding:10px;border-radius:8px;border:1.5px solid var(--border);background:var(--input-bg);color:var(--text);">
+                    <option value="">选择所属任务</option>
+                    ${appData.tasks.map(t => `<option value="${t.id}" ${(note?note.taskId:taskFilter)===t.id?'selected':''}>${escapeHtml(t.name)}</option>`).join('')}
+                  </select>
+                  <input type="text" id="modalNoteTitle" placeholder="笔记标题" value="${note ? escapeHtml(note.title) : ''}">
+                  <textarea id="modalNoteContent" placeholder="笔记内容" style="min-height:150px;">${note ? escapeHtml(note.content || '') : ''}</textarea>
+                  <div class="modal-actions">
+                    <button class="btn btn-outline" onclick="closeModal()">取消</button>
+                    <button class="btn btn-primary" id="modalSaveNoteBtn">保存</button>
+                  </div>
+                </div>
+              </div>`;
+                document.getElementById('modalSaveNoteBtn').addEventListener('click', () => {
+                    const taskId = document.getElementById('modalNoteTask').value;
+                    const title = document.getElementById('modalNoteTitle').value.trim();
+                    const content = document.getElementById('modalNoteContent').value.trim();
+                    if (!taskId || !title) { alert('请选择任务并填写标题'); return; }
+                    if (note) {
+                        note.taskId = taskId;
+                        note.title = title;
+                        note.content = content;
+                        note.updatedAt = new Date().toISOString();
+                    } else {
+                        appData.notes.push({
+                            id: generateId(),
+                            taskId,
+                            title,
+                            content,
+                            createdAt: new Date().toISOString(),
+                            updatedAt: new Date().toISOString()
+                        });
+                    }
+                    persistData();
+                    renderNotes();
+                    closeModal();
+                });
+            }
+
+            function viewNote(noteId) {
+                const note = appData.notes.find(n => n.id === noteId);
+                if (!note) return;
+                const task = appData.tasks.find(t => t.id === note.taskId);
+                const modal = document.getElementById('modalContainer');
+                modal.innerHTML = `
+              <div class="modal-overlay" id="currentModalOverlay">
+                <div class="modal" style="max-width:650px;">
+                  <h3>📒 ${escapeHtml(note.title)}</h3>
+                  <div style="font-size:0.8rem;color:var(--text3);">任务：${task?escapeHtml(task.name):'未知'} | ${new Date(note.updatedAt||note.createdAt).toLocaleString()}</div>
+                  <div class="knowledge-content">${escapeHtml(note.content || '（无内容）')}</div>
+                  <div class="modal-actions">
+                    <button class="btn btn-outline" onclick="closeModal()">关闭</button>
+                    <button class="btn btn-primary" onclick="closeModal();editNote('${note.id}')">✏️ 编辑</button>
+                  </div>
+                </div>
+              </div>`;
+            }
+
+            function editNote(noteId) { openNoteModal(noteId); }
+
+            function deleteNote(noteId) {
+                if (!confirm('确定删除此笔记吗？')) return;
+                appData.notes = appData.notes.filter(n => n.id !== noteId);
+                persistData();
+                renderNotes();
+            }
+
+            function renderMindmap() {
+                const container = document.getElementById('mindmapContainer');
+                const taskFilter = document.getElementById('mindmapTaskFilter')?.value || '';
+                if (!container) return;
+                let nodes = appData.knowledgeNodes;
+                if (taskFilter) nodes = nodes.filter(n => n.taskId === taskFilter);
+                if (nodes.length === 0) {
+                    container.innerHTML =
+                        '<div class="empty-state"><div class="empty-icon">🗺️</div>暂无知识节点，请先在知识库中构建</div>';
+                    return;
+                }
+                const roots = nodes.filter(n => !n.parentId || (taskFilter && n.taskId === taskFilter && !nodes.some(
+                    other => other.id === n.parentId)));
+                if (roots.length === 0) {
+                    container.innerHTML =
+                        '<div class="empty-state"><div class="empty-icon">🗺️</div>该任务下暂无根节点</div>';
+                    return;
+                }
+                function buildMindmapHTML(nodeList, parentId, depth) {
+                    const children = nodeList.filter(n => n.parentId === parentId);
+                    if (children.length === 0) return '';
+                    const gapColor = ['#4A6CF7', '#6366f1', '#8b5cf6', '#ec4899', '#f43f5e', '#10b981', '#f59e0b'][
+                        depth % 7
+                    ];
+                    return `
+                <div style="display:flex;flex-wrap:wrap;gap:12px;justify-content:center;padding:8px;border-left:${depth>0?'3px solid '+gapColor:'none'};margin-left:${depth>0?'16px':'0'};">
+                  ${children.map(c => {
+                    const hasKids = nodeList.some(n => n.parentId === c.id);
+                    const bgColor = c.type==='folder' ? '#eef1ff' : '#f0fdf4';
+                    const borderColor = c.type==='folder' ? '#4A6CF7' : '#10b981';
+                    return `
+                    <div style="display:flex;flex-direction:column;align-items:center;gap:6px;">
+                      <div style="background:${bgColor};border:2px solid ${borderColor};border-radius:12px;padding:10px 16px;font-weight:600;font-size:0.85rem;cursor:pointer;transition:0.2s;white-space:nowrap;max-width:200px;overflow:hidden;text-overflow:ellipsis;box-shadow:0 2px 8px rgba(0,0,0,0.06);" title="${escapeHtml(c.name)}" onclick="switchToKnowledgeNode('${c.id}')">
+                        ${c.type==='folder'?'📁':'📄'} ${escapeHtml(c.name)}
+                      </div>
+                      ${hasKids ? buildMindmapHTML(nodeList, c.id, depth+1) : ''}
+                    </div>`;
+                  }).join('')}
+                </div>`;
+                }
+                container.innerHTML = `
+              <div style="text-align:center;font-weight:700;margin-bottom:10px;color:var(--primary);">
+                🗺️ 知识导图 ${taskFilter ? '- ' + escapeHtml((appData.tasks.find(t=>t.id===taskFilter)||{}).name || '') : ''}
+              </div>
+              ${buildMindmapHTML(nodes, null, 0)}
+              <div style="text-align:center;font-size:0.7rem;color:var(--text3);margin-top:12px;">点击节点可跳转到知识库查看详情</div>`;
+            }
+
+            function switchToKnowledgeNode(nodeId) {
+                const node = appData.knowledgeNodes.find(n => n.id === nodeId);
+                if (!node) return;
+                document.getElementById('knowledgeTaskFilter').value = node.taskId;
+                document.querySelectorAll('.sidebar-nav-item').forEach(el => el.classList.remove('active'));
+                const nav = document.querySelector('.sidebar-nav-item[data-panel="knowledge"]');
+                if (nav) nav.classList.add('active');
+                document.querySelectorAll('.content-panel').forEach(el => el.classList.remove('active'));
+                const panel = document.getElementById('panel-knowledge');
+                if (panel) panel.classList.add('active');
+                renderKnowledgeTree();
+                setTimeout(() => selectKnowledgeNode(nodeId), 300);
+            }
+
+            function saveSettings() {
+                const topSlogan = document.getElementById('settingTopSlogan')?.value.trim();
+                const bottomSlogan = document.getElementById('settingBottomSlogan')?.value.trim();
+                const growthTarget = parseInt(document.getElementById('settingGrowthTarget')?.value) || 100;
+                const darkMode = document.getElementById('settingDarkMode')?.value || 'auto';
+                if (topSlogan !== undefined) appData.slogans.topRight = topSlogan || '✨ 数学是宇宙的语言';
+                if (bottomSlogan !== undefined) appData.slogans.bottom = bottomSlogan || '每天进步一点点，数学之路无限远';
+                appData.growthTarget = Math.max(10, growthTarget);
+                appData.settings.darkMode = darkMode;
+                persistData();
+                applyTheme();
+                alert('✅ 设置已保存！');
+            }
+
+            function exportAllData() {
+                const blob = new Blob([JSON.stringify(appData, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = '数学工作台_备份_' + new Date().toISOString().slice(0, 10) + '.json';
+                a.click();
+                URL.revokeObjectURL(url);
+            }
+
+            function importAllData(event) {
+                const file = event.target.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const data = JSON.parse(e.target.result);
+                        if (!data.tasks || !data.knowledgeNodes || !data.questions || !data.notes) {
+                            throw new Error('数据格式不完整');
+                        }
+                        if (!confirm('导入将覆盖当前数据，确定继续吗？')) return;
+                        appData = data;
+                        if (!appData.slogans) appData.slogans = { topRight: '✨ 数学是宇宙的语言',
+                            bottom: '每天进步一点点，数学之路无限远' };
+                        if (!appData.growthTarget) appData.growthTarget = 100;
+                        if (!appData.settings) appData.settings = { darkMode: 'auto' };
+                        if (!appData.nextId) appData.nextId = 1;
+                        persistData();
+                        applyTheme();
+                        alert('✅ 数据导入成功！');
+                        location.reload();
+                    } catch (err) {
+                        alert('❌ 导入失败：文件格式不正确');
+                    }
+                };
+                reader.readAsText(file);
+                event.target.value = '';
+            }
+
+            function resetAllData() {
+                if (!confirm('⚠️ 确定要重置全部数据吗？此操作不可恢复！\n\n建议先导出备份。')) return;
+                if (!confirm('再次确认：真的要清除所有数据吗？')) return;
+                appData = getDefaultData();
+                persistData();
+                applyTheme();
+                alert('✅ 数据已重置');
+                location.reload();
+            }
+
+            function closeModal() {
+                document.getElementById('modalContainer').innerHTML = '';
+            }
+            document.getElementById('modalContainer').addEventListener('click', function(e) {
+                if (e.target.id === 'currentModalOverlay') closeModal();
+            });
+
+            document.getElementById('sidebar').addEventListener('click', function(e) {
+                const navItem = e.target.closest('.sidebar-nav-item');
+                if (!navItem) return;
+                const panelName = navItem.dataset.panel;
+                if (!panelName) return;
+                document.querySelectorAll('.sidebar-nav-item').forEach(el => el.classList.remove('active'));
+                navItem.classList.add('active');
+                document.querySelectorAll('.content-panel').forEach(el => el.classList.remove('active'));
+                const targetPanel = document.getElementById('panel-' + panelName);
+                if (targetPanel) {
+                    targetPanel.classList.add('active');
+                    if (panelName === 'dashboard') updateDashboard();
+                    if (panelName === 'tasks') renderTasks();
+                    if (panelName === 'knowledge') { updateKnowledgeTaskFilter();
+                        renderKnowledgeTree(); }
+                    if (panelName === 'questions') { updateQuestionTaskFilter();
+                        renderQuestions(); }
+                    if (panelName === 'notes') { updateNoteTaskFilter();
+                        renderNotes(); }
+                    if (panelName === 'mindmap') { updateMindmapTaskFilter();
+                        renderMindmap(); }
+                    if (panelName === 'settings') updateSlogans();
+                }
+            });
+
+            document.getElementById('topRightSlogan').addEventListener('click', function() {
+                const newSlogan = prompt('编辑右上角标语：', appData.slogans.topRight || '');
+                if (newSlogan !== null) {
+                    appData.slogans.topRight = newSlogan.trim() || '✨ 数学是宇宙的语言';
+                    persistData();
+                }
+            });
+            document.getElementById('bottomBar').addEventListener('click', function() {
+                const newSlogan = prompt('编辑底部标语：', appData.slogans.bottom || '');
+                if (newSlogan !== null) {
+                    appData.slogans.bottom = newSlogan.trim() || '每天进步一点点，数学之路无限远';
+                    persistData();
+                }
+            });
+
+            document.querySelector('.growth-bar-container').addEventListener('click', function() {
+                const totalK = appData.knowledgeNodes.filter(n => n.type === 'item').length;
+                const totalQ = appData.questions.length;
+                const totalN = appData.notes.length;
+                const target = appData.growthTarget || 100;
+                const score = Math.min(100, Math.round(
+                    (Math.min(totalK / target, 1) * 40) +
+                    (Math.min(totalQ / (target * 1.5), 1) * 40) +
+                    (Math.min(totalN / (target * 0.5), 1) * 20)
+                ));
+                alert(`🌱 学习成长详情\n\n📊 综合成长度：${score}%\n\n📄 知识库条目：${totalK} / 目标${target}（权重40%）\n📝 题库题目：${totalQ} / 约${Math.round(target*1.5)}（权重40%）\n📒 学习笔记：${totalN} / 约${Math.round(target*0.5)}（权重20%）`);
+            });
+
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') closeModal();
+                if (e.ctrlKey && e.key === 's') {
+                    e.preventDefault();
+                    persistData();
+                }
+            });
+
+            function init() {
+                applyTheme();
+                updateAllUI();
+                renderTasks();
+                renderKnowledgeTree();
+                renderQuestions();
+                renderNotes();
+                updateDashboard();
+                updateSlogans();
+                document.querySelectorAll('.tree-node.root > .tree-children').forEach(el => {
+                    el.style.maxHeight = el.scrollHeight + 'px';
+                });
+                // 每小时检查一次暗色模式
+                setInterval(applyTheme, 60 * 60 * 1000);
+                // 页面可见性变化时也检查
+                document.addEventListener('visibilitychange', () => {
+                    if (!document.hidden) applyTheme();
+                });
+            }
+
+            window.openTaskModal = openTaskModal;
+            window.editTask = editTask;
+            window.deleteTask = deleteTask;
+            window.switchToTask = switchToTask;
+            window.openKnowledgeNodeModal = openKnowledgeNodeModal;
+            window.editKnowledgeNode = editKnowledgeNode;
+            window.deleteKnowledgeNode = deleteKnowledgeNode;
+            window.selectKnowledgeNode = selectKnowledgeNode;
+            window.openQuestionModal = openQuestionModal;
+            window.viewQuestion = viewQuestion;
+            window.editQuestion = editQuestion;
+            window.deleteQuestion = deleteQuestion;
+            window.openNoteModal = openNoteModal;
+            window.viewNote = viewNote;
+            window.editNote = editNote;
+            window.deleteNote = deleteNote;
+            window.closeModal = closeModal;
+            window.saveSettings = saveSettings;
+            window.exportAllData = exportAllData;
+            window.importAllData = importAllData;
+            window.resetAllData = resetAllData;
+            window.switchToKnowledgeNode = switchToKnowledgeNode;
+            window.renderKnowledgeTree = renderKnowledgeTree;
+            window.renderQuestions = renderQuestions;
+            window.renderNotes = renderNotes;
+            window.renderMindmap = renderMindmap;
+            window.renderTasks = renderTasks;
+            window.updateDashboard = updateDashboard;
+
+            init();
+            console.log('📐 数学学习工作台已就绪（暗色模式已支持）');
+        })();
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            const div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
+        }
+    </script>
+</body>
+</html>
